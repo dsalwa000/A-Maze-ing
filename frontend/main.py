@@ -1,15 +1,8 @@
 from mlx import Mlx
 
-# def mymouse(button, x, y, mystuff):
-#     print(f"Got mouse event! button {button} at {x},{y}.")
-
-# def mykey(keynum, mystuff):
-#     print(f"Got key {keynum}, and got my stuff back:")
-#     print(mystuff)
-#     if keynum == 32:
-#         m.mlx_mouse_hook(win_ptr, None, None)
-
 WALL_COLOR = 4294901760  # red
+DARK_BG = 0
+BLUE_BG = 4278190335
 
 
 def my_mlx_pixel_put(img_data: tuple[memoryview, int, int, int], x: int,
@@ -17,10 +10,7 @@ def my_mlx_pixel_put(img_data: tuple[memoryview, int, int, int], x: int,
     addr = img_data[0]
     bits_per_pixel = img_data[1]
     line_length = img_data[2]
-    # print(f"line length: {line_length}")
-    # print(f"bits per pixel: {bits_per_pixel}")
     offset = int(y * line_length + x * (bits_per_pixel / 8))
-    # offset = y * 20 + x
     addr[offset] = color % 256
     addr[offset + 1] = (color >> 8) % 256
     addr[offset + 2] = (color >> 16) % 256
@@ -72,10 +62,27 @@ def draw_cell(data, code: int):
         draw_wall(data, (0, 0), (2, 20))
 
 
-def init_cell(data):
+def init_cell(data, color):
     for x in range(20):
         for y in range(20):
-            my_mlx_pixel_put(data, x, y, 0)
+            my_mlx_pixel_put(data, x, y, color)
+
+
+def generate_pathway(start: tuple, path_string: str) -> list:
+    pathway = []
+    current_pos = start
+    pathway.append(current_pos)
+    for i in range(len(path_string)):
+        if path_string[i] == 'S':
+            current_pos = (current_pos[0], current_pos[1] + 1)
+        elif path_string[i] == 'N':
+            current_pos = (current_pos[0], current_pos[1] - 1)
+        elif path_string[i] == 'W':
+            current_pos = (current_pos[0] - 1, current_pos[1])
+        elif path_string[i] == 'E':
+            current_pos = (current_pos[0] + 1, current_pos[1])
+        pathway.append(current_pos)
+    return pathway
 
 
 m = Mlx()
@@ -109,26 +116,19 @@ config = (
     "86956951692C1455416928552"
     "C545545456C54555545444556"
 )
+pathway = generate_pathway((1, 1),
+                           "SWSESWSESWSSSEESEEENEESESEESSSEEESSSEEENNENEE")
 for i in range(len(config)):
     img = m.mlx_new_image(mlx_ptr, 20, 20)
     img_data = m.mlx_get_data_addr(img)
-    init_cell(img_data)
-    # print(config[i])
+    x = (i % 25)
+    y = i // 25
+    if (x, y) in pathway:
+        init_cell(img_data, BLUE_BG)
+    else:
+        init_cell(img_data, DARK_BG)
     draw_cell(img_data, int(config[i], 16))
-    x = (i % 25) * 20
-    y = i // 25 * 20
-    print(f"for {i}({config[i]}) x: {x}, y: {y}")
-    m.mlx_put_image_to_window(mlx_ptr, win_ptr, img, x, y)
-
-
-
-
-# m.mlx_string_put(mlx_ptr, win_ptr, 20, 20, 255, "Hello PyMlx!")
-# (ret, w, h) = m.mlx_get_screen_size(mlx_ptr)
-# print(f"Got screen size: {w} x {h} .")
-
-# stuff = [1, 2]
-# m.mlx_mouse_hook(win_ptr, mymouse, None)
-# m.mlx_key_hook(win_ptr, mykey, stuff)
+    m.mlx_put_image_to_window(mlx_ptr, win_ptr, img, x * 20, y * 20)
 
 m.mlx_loop(mlx_ptr)
+
