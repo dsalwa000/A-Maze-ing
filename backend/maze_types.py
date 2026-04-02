@@ -20,6 +20,12 @@ class Cell:
 
 
 class Direction(Enum):
+    """
+    x determines an axis
+    1 or -1 determines a direction
+    1, 2, 4, 8 determines a wall
+
+    """
     NORTH = "y 1 1"
     EAST = "x 1 2"
     SOUTH = "y -1 4"
