@@ -1,40 +1,134 @@
 MAZE_SIZE = 25
 
+
 class Cell:
+    """Class containing information about a cell"""
     def __init__(self, value, position):
-        self.value = value
+        self.value = int(value, 16)
         self.position = position
         self.distance = 0
         self.caller = None
         self.is_visited = False
 
     def add_to_queue(self, caller):
+        """When added to the queue by the previous cell (caller), change
+        internal properties where needed
+        """
         self.caller = caller
         self.distance = caller.distance + 1
+        self.is_visited = True
 
     def north(self, graph):
-        if self.value % 2:
-            return get_cell_at_pos(graph, (self.position[0], self.position[1] - 1))
+        """Get a cell to north of self if it can be entered, return None
+        otherwise
+        """
+        if self.position[1] <= MAZE_SIZE and not self.value % 2:
+            return get_cell_at_pos(graph, (self.position[0],
+                                           self.position[1] - 1))
+        else:
+            return None
+
+    def south(self, graph):
+        """Get a cell to south of self if it can be entered, return None
+        otherwise
+        """
+        if self.position[1] >= 0 and not (self.value >> 2) % 2:
+            return get_cell_at_pos(graph, (self.position[0],
+                                           self.position[1] + 1))
+        else:
+            return None
+
+    def east(self, graph):
+        """Get a cell to east of self if it can be entered, return None
+        otherwise
+        """
+        if self.position[0] <= MAZE_SIZE and not (self.value >> 1) % 2:
+            return get_cell_at_pos(graph, (self.position[0] + 1,
+                                           self.position[1]))
+        else:
+            return None
+
+    def west(self, graph):
+        """Get a cell to west of self if it can be entered, return None
+        otherwise
+        """
+        if self.position[0] >= 0 and not (self.value >> 3) % 2:
+            return get_cell_at_pos(graph, (self.position[0] - 1,
+                                           self.position[1]))
         else:
             return None
 
 
-def get_available_neighbours(graph, queue, cell):
-    res = {}
+def get_available_neighbours(graph, cell):
+    """Get all the neighboring cells that are not blocked by a wall and haven't
+    been visited
+
+    Arguments:
+    graph -- list of all cells in proper order
+    cell -- a cell whose neighbours we are scanning
+    """
+    res = set()
 
     north = cell.north(graph)
-    if north != None and not north.is_visited:
+    if north is not None and not north.is_visited:
         res.add(north)
-    # and the same with others
+    south = cell.south(graph)
+    if south is not None and not south.is_visited:
+        res.add(south)
+    east = cell.east(graph)
+    if east is not None and not east.is_visited:
+        res.add(east)
+    west = cell.west(graph)
+    if west is not None and not west.is_visited:
+        res.add(west)
 
-# def make_step(graph, queue, current_pos):
-#     next_cell = get_cell_at_pos(graph, (current_pos[0] + 1, current_pos[1]))
+    return res
 
-#     queue.append(graph[])
+
+def make_step(graph, queue):
+    """One step in the algorithm - get all available neighbours for each cell
+    in current queue, and make them the next queue
+
+    Arguments:
+    graph -- list of all cells in proper order
+    queue -- list of cells that we are currently in
+    """
+    new_queue = []
+    for cell in queue:
+        neighbours = get_available_neighbours(graph, cell)
+        for n in neighbours:
+            new_queue.append(n)
+            n.add_to_queue(cell)
+    return new_queue
+
+
+def parse_path(path):
+    """Get a string describing a path from a list of cells
+
+    Arguments:
+    path -- the list of cells
+    """
+    path_str = ""
+    for i in range(1, len(path)):
+        if path[i].position[0] > path[i - 1].position[0]:
+            path_str += "E"
+        elif path[i].position[0] < path[i - 1].position[0]:
+            path_str += "W"
+        elif path[i].position[1] > path[i - 1].position[1]:
+            path_str += "S"
+        elif path[i].position[1] < path[i - 1].position[1]:
+            path_str += "N"
+    return path_str
 
 
 def get_cell_at_pos(graph, pos):
-    i = pos.y * MAZE_SIZE + pos.x
+    """Get a cell in the maze based on its' position
+
+    Arguments:
+    graph -- list of all cells in proper order
+    pos -- tuple with x and y values of the cell
+    """
+    i = pos[1] * MAZE_SIZE + pos[0]
     return graph[i]
 
 
@@ -62,17 +156,40 @@ config = (
 )
 
 graph = []
-for i in config:
+for i in range(len(config)):
     cell = Cell(config[i], (i % MAZE_SIZE, i // MAZE_SIZE))
     graph.append(cell)
 
 start = (1, 1)
 end = (19, 14)
 
-current_pos = start
 queue = []
 queue.append(get_cell_at_pos(graph, start))
 
+finish = None
 
+while len(queue) > 0:
+    queue = make_step(graph, queue)
+    finish = next((x for x in queue if x.position == end), None)
+    if finish is not None:
+        break
 
+if finish is not None:
+    print(f"Successfully found finish at {finish.position}")
+    print("Our path:")
 
+    cell = finish
+    path_cells = []
+    while cell.position != start:
+        path_cells.append(cell)
+        cell = cell.caller
+    path_cells.append(cell)
+
+    path_cells.reverse()
+
+    print([x.position for x in path_cells])
+    pathway = parse_path(path_cells)
+    print(pathway)
+
+else:
+    print("Didnt find finish")
