@@ -1,16 +1,21 @@
+from __future__ import annotations
+
 MAZE_SIZE = 25
 
 
 class Cell:
-    """Class containing information about a cell"""
-    def __init__(self, value, position):
-        self.value = int(value, 16)
-        self.position = position
-        self.distance = 0
-        self.caller = None
-        self.is_visited = False
+    """Class containing information about a cell
+    value -- number from 0 to 15, specifying what walls the cell has
+    position -- 
+    """
+    def __init__(self, value: str, position: tuple) -> None:
+        self.value: int = int(value, 16)
+        self.position: tuple = position
+        self.distance: int = 0
+        self.caller: Cell = None
+        self.is_visited: bool = False
 
-    def add_to_queue(self, caller):
+    def add_to_queue(self, caller: 'Cell') -> None:
         """When added to the queue by the previous cell (caller), change
         internal properties where needed
         """
@@ -18,7 +23,7 @@ class Cell:
         self.distance = caller.distance + 1
         self.is_visited = True
 
-    def north(self, graph):
+    def north(self, graph: list) -> Cell | None:
         """Get a cell to north of self if it can be entered, return None
         otherwise
         """
@@ -28,7 +33,7 @@ class Cell:
         else:
             return None
 
-    def south(self, graph):
+    def south(self, graph: list) -> Cell | None:
         """Get a cell to south of self if it can be entered, return None
         otherwise
         """
@@ -38,7 +43,7 @@ class Cell:
         else:
             return None
 
-    def east(self, graph):
+    def east(self, graph: list) -> Cell | None:
         """Get a cell to east of self if it can be entered, return None
         otherwise
         """
@@ -48,7 +53,7 @@ class Cell:
         else:
             return None
 
-    def west(self, graph):
+    def west(self, graph: list) -> Cell | None:
         """Get a cell to west of self if it can be entered, return None
         otherwise
         """
@@ -59,7 +64,7 @@ class Cell:
             return None
 
 
-def get_available_neighbours(graph, cell):
+def get_available_neighbours(graph: list, cell: Cell) -> set:
     """Get all the neighboring cells that are not blocked by a wall and haven't
     been visited
 
@@ -85,7 +90,7 @@ def get_available_neighbours(graph, cell):
     return res
 
 
-def make_step(graph, queue):
+def make_step(graph: list, queue: list) -> list:
     """One step in the algorithm - get all available neighbours for each cell
     in current queue, and make them the next queue
 
@@ -102,7 +107,7 @@ def make_step(graph, queue):
     return new_queue
 
 
-def parse_path(path):
+def parse_path(path: list) -> str:
     """Get a string describing a path from a list of cells
 
     Arguments:
@@ -121,7 +126,7 @@ def parse_path(path):
     return path_str
 
 
-def get_cell_at_pos(graph, pos):
+def get_cell_at_pos(graph: list, pos: tuple) -> Cell:
     """Get a cell in the maze based on its' position
 
     Arguments:
@@ -132,64 +137,49 @@ def get_cell_at_pos(graph, pos):
     return graph[i]
 
 
-config = (
-    "9515391539551795151151153"
-    "EBABAE812853C1412BA812812"
-    "96A8416A84545412AC4282C2A"
-    "C3A83816A9395384453A82D02"
-    "96842A852AC07AAD13A8283C2"
-    "C1296C43AAB83AA92AA8686BA"
-    "92E853968428444682AC12902"
-    "AC3814452FA83FFF82C52C42A"
-    "85684117AFC6857FAC1383D06"
-    "C53AD043AFFFAFFF856AA8143"
-    "91441294297FAFD501142C6BA"
-    "AA912AC3843FAFFF82856D52A"
-    "842A8692A92B8517C4451552A"
-    "816AC384468285293917A9542"
-    "C416928513C443A828456C3BA"
-    "91416AA92C393A82801553AAA"
-    "A81292AA814682C6A8693C6AA"
-    "A8442C6C2C1168552C16A9542"
-    "86956951692C1455416928552"
-    "C545545456C54555545444556"
-)
+def find_shortest_path(config: str, start: tuple, end: tuple) -> str:
+    """Find the shortest path in the maze described by the config string
+    
+    Arguments:
+    config -- the string describing the maze
+    start -- start position
+    end -- end position
+    """
 
-graph = []
-for i in range(len(config)):
-    cell = Cell(config[i], (i % MAZE_SIZE, i // MAZE_SIZE))
-    graph.append(cell)
+    graph = []
+    for i in range(len(config)):
+        cell = Cell(config[i], (i % MAZE_SIZE, i // MAZE_SIZE))
+        graph.append(cell)
 
-start = (1, 1)
-end = (19, 14)
+    queue = []
+    queue.append(get_cell_at_pos(graph, start))
 
-queue = []
-queue.append(get_cell_at_pos(graph, start))
+    finish = None
 
-finish = None
+    while len(queue) > 0:
+        queue = make_step(graph, queue)
+        finish = next((x for x in queue if x.position == end), None)
+        if finish is not None:
+            break
 
-while len(queue) > 0:
-    queue = make_step(graph, queue)
-    finish = next((x for x in queue if x.position == end), None)
     if finish is not None:
-        break
+        print(f"Successfully found finish at {finish.position}")
+        print("Our path:")
 
-if finish is not None:
-    print(f"Successfully found finish at {finish.position}")
-    print("Our path:")
-
-    cell = finish
-    path_cells = []
-    while cell.position != start:
+        cell = finish
+        path_cells = []
+        while cell.position != start:
+            path_cells.append(cell)
+            cell = cell.caller
         path_cells.append(cell)
-        cell = cell.caller
-    path_cells.append(cell)
 
-    path_cells.reverse()
+        path_cells.reverse()
 
-    print([x.position for x in path_cells])
-    pathway = parse_path(path_cells)
-    print(pathway)
+        # print([x.position for x in path_cells])
+        pathway = parse_path(path_cells)
+        return pathway
+        # print(pathway)
 
-else:
-    print("Didnt find finish")
+    else:
+        print("Didnt find finish")
+        return None
