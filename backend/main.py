@@ -6,6 +6,8 @@ This file is directly responisble for generating an output
 from errors import MazeSizeError
 from maze_types import Cell
 from utils import (
+    generate_maze,
+    generate_42,
     avaiable_directions,
     change_position,
     pick_direction,
@@ -22,7 +24,7 @@ if __name__ == "__main__":
             width: int = int(input("Width: "))
             height: int = int(input("Height: "))
 
-            if width < 5 or height < 5:
+            if width < 10 or height < 10:
                 raise MazeSizeError("The size of a maze is too small (min 10)")
 
             if width > 50 or height > 50:
@@ -33,9 +35,8 @@ if __name__ == "__main__":
         except (MazeSizeError, ValueError) as e:
             print(e)
 
-    maze: list[list[Cell]] = [
-        [Cell() for y in range(height)] for x in range(width)
-    ]
+    maze: list[list[Cell]] = generate_maze(width, height)
+    cells_42_amount: int = generate_42(width, height, maze)
 
     """
     Our generation starts at (0, 0) postition
@@ -47,7 +48,7 @@ if __name__ == "__main__":
     saved_positions: list[tuple[int]] = []
     count = 1
 
-    while width * height > count:
+    while (width * height) - cells_42_amount > count:
 
         maze[x][y].visited = True
 
