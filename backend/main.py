@@ -39,8 +39,8 @@ if __name__ == "__main__":
     cells_42_amount: int = generate_42(width, height, maze)
 
     """
-    Our generation starts at (0, 0) postition
-    saved is a last position which had a choice
+    Our generation starts at (0, 0) postition and
+    saved_positions are last positions which had a choice
 
     """
     x = 0
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         """
         direction: indicates which axis we use (x or y)
         go_or_back: (1 or -1) which indicates where we go
-        wall: it shows which wall is to destroy
+        wall_to_destroy: it shows a bitmark number of wall to destroy
 
         """
         parts, to_save = picked_direction

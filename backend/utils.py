@@ -20,7 +20,7 @@ def generate_42(
     maze: list[list[Cell]]
 ) -> int:
     """
-    This function create a 42 sign at the center of a maze.
+    This function create a 42 sign at the center of a maze
 
     Returns:
     It returns amount of cells (int) which will be used as cells creating
@@ -118,12 +118,14 @@ def avaiable_directions(
 
 def pick_direction(
     directions: list[Direction],
-) -> Optional[tuple[list[str], bool]]:
-    """Pick randomly a nearby not-visited direction.
+) -> Optional[tuple[list[str], bool]] | None:
+    """
+    Pick randomly a nearby not-visited direction
 
-    Returns (parts, to_save) where parts is a 3-item list of strings
-    [axis, step, wall] and to_save indicates whether the current position
-    should be saved for backtracking. Returns None if there are no options.
+    Returns (parts, to_save) where 
+        parts: is a 3-item list of strings [axis, step, wall]
+        (look at the Direction Enum)
+        to_save: returns True when the cell had more than option to go
     """
 
     if not directions:
