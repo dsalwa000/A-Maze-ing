@@ -9,12 +9,10 @@ from enum import Enum
 @dataclass
 class Cell:
     """
-    number: it is for counting cells
     walls: <do this later>
     visited: determies if the cell was visisted or not
 
     """
-    number: int
     walls: int = 15
     visited: bool = False
 

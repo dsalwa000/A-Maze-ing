@@ -22,5 +22,5 @@ def maze_direction_details(
     count: int
 ) -> None:
     print(f"Count: {count}")
-    print(f"Direction: {direction} -> {go_or_back}")
+    print(f"Direction: {go_or_back} {direction}")
     print(f"Next position: (x: {x}, y: {y})")

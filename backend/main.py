@@ -12,11 +12,6 @@ from utils import (
     remove_wall_at_next_cell,
     create_and_display_maze,
 )
-from dev import (
-    maze_direction_details,
-    display_wall,
-    display_wall_to_destroy,
-)
 
 if __name__ == "__main__":
 
@@ -38,9 +33,8 @@ if __name__ == "__main__":
         except (MazeSizeError, ValueError) as e:
             print(e)
 
-    """Filling our maze with full cells"""
     maze: list[list[Cell]] = [
-        [Cell(y * width + x) for y in range(height)] for x in range(width)
+        [Cell() for y in range(height)] for x in range(width)
     ]
 
     """
@@ -68,8 +62,6 @@ if __name__ == "__main__":
 
         if picked_direction is None:
 
-            print(f"Saved positions: {saved_positions}")
-
             for position in saved_positions:
                 saved_x, saved_y = position
 
@@ -81,12 +73,11 @@ if __name__ == "__main__":
                     saved_y
                 )
                 if direction_check:
-                    # print("We had it")
                     x = saved_x
                     y = saved_y
                     break
-
-            # print("goin back")
+                else:
+                    saved_positions.remove(position)
             continue
 
         """
@@ -101,32 +92,14 @@ if __name__ == "__main__":
         go_or_back = int(go_or_back)
         wall_to_destroy = int(wall_to_destroy)
 
-        print("Wall before being destroyed: ")
-        display_wall(maze[x][y])
-
         maze[x][y].walls -= wall_to_destroy
         count += 1
-
-        display_wall_to_destroy(wall_to_destroy)
-        # display_position(x, y)
-
-        print("Wall after being destroyed:")
-        display_wall(maze[x][y])
 
         if to_save is True:
             saved_positions.insert(0, (x, y))
 
         x, y = change_position(direction, go_or_back, x, y)
         remove_wall_at_next_cell(maze[x][y], wall_to_destroy)
-
-        maze_direction_details(
-            direction,
-            go_or_back,
-            x, y,
-            count
-        )
-
-        print()
 
     print("\nOur maze:")
     maze_str = create_and_display_maze(maze, height, width)

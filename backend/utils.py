@@ -95,7 +95,7 @@ def create_and_display_maze(
         line = []
 
         for i in range(0, width):
-            line.append(hex(maze[i][j].walls)[2:])
+            line.append(format(maze[i][j].walls & 0xF, "x"))
 
         print(f'"{"".join(line)}"')
         maze_str.append("".join(line))
