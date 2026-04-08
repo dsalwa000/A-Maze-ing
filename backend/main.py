@@ -103,10 +103,10 @@ if __name__ == "__main__":
         x, y = change_position(direction, go_or_back, x, y)
         remove_wall_at_next_cell(maze[x][y], wall_to_destroy)
 
-    maze_str = create_and_display_maze(maze, height, width)
+    maze_str: list[str] = create_and_display_maze(maze, height, width)
 
     is_perfect = False
     if is_perfect is False:
         make_maze_imperfect(maze, height, width)
 
-    maze_str = create_and_display_maze(maze, height, width)
+    maze_str: list[str] = create_and_display_maze(maze, height, width)
