@@ -24,3 +24,12 @@ def maze_direction_details(
     print(f"Count: {count}")
     print(f"Direction: {go_or_back} {direction}")
     print(f"Next position: (x: {x}, y: {y})")
+
+
+def show_wall_after_changes(cell: Cell, picked_wall: int, x: int, y: int):
+
+    print(f"\nPicked wall: {picked_wall}")
+
+    print(f"Cell localisation: ({x}, {y})")
+    print(cell)
+    print()

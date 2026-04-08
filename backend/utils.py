@@ -6,6 +6,7 @@ during our converting process
 from maze_types import Cell, Direction
 import random
 from typing import Optional
+from dev import show_wall_after_changes
 
 
 def generate_maze(width: int, height: int) -> list[list[Cell]]:
@@ -169,16 +170,89 @@ def create_and_display_maze(
 ) -> list[str]:
     maze_str = []
 
+    print("Our maze:")
     for j in range(height - 1, -1, -1):
         line = []
-        tf = []
 
         for i in range(0, width):
             line.append(format(maze[i][j].walls & 0xF, "x"))
-            tf.append(f" [{maze[i][j].visited}] ")
 
         print(f'"{"".join(line)}"')
-        # print(f'"{"".join(tf)}"')
         maze_str.append("".join(line))
 
     return maze_str
+
+
+def make_maze_imperfect(
+    maze: list[list[Cell]],
+    height: int,
+    width: int
+) -> list[str]:
+    """
+    This function randomly destroys walls inside a maze
+    to makes it imperfect
+
+    Each iteration alters one cell inside single 3x3 square
+    inside the maze
+
+    """
+    start_y: int = height - 1
+    end_y: int = height - 3
+    count_changes: int = 0
+
+    while end_y >= 0:
+        start_x: int = 0
+        end_x: int = 2
+
+        while end_x < width:
+            x = random.randint(start_x, end_x)
+            y = random.randint(end_y, start_y)
+
+            # It secures the 42 sign
+            if maze[x][y].walls == 15:
+                continue
+
+            """
+            directions indexes:
+            0 - North, 1 - East, 2 - South, 3 - West
+
+            """
+            directions: list[int] = [
+                maze[x][y].walls & mask for mask in (1, 2, 4, 8)
+            ]
+            directions_cpy = directions.copy()
+
+            print("Before: ")
+            print(directions_cpy)
+
+            if x == 0 or directions_cpy[3] == 0:
+                directions.remove(directions_cpy[3])
+
+            if x == width - 1 or directions_cpy[1] == 0:
+                directions.remove(directions_cpy[1])
+
+            if y == height - 1 or directions_cpy[0] == 0:
+                directions.remove(directions_cpy[0])
+
+            if y == 0 or directions_cpy[2] == 0:
+                directions.remove(directions_cpy[2])
+
+            print("After:")
+            print(directions_cpy)
+
+            if not directions:
+                continue
+
+            picked_wall = random.choice(directions)
+            maze[x][y].walls -= picked_wall
+
+            show_wall_after_changes(maze[x][y], picked_wall, x, y)
+
+            start_x += 3
+            end_x += 3
+            count_changes += 1
+
+        start_y -= 3
+        end_y -= 3
+
+    print(f"Changes: {count_changes}\n")
