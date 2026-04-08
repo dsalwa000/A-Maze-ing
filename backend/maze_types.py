@@ -27,10 +27,12 @@ class Cell:
     Attributes:
         walls: Wall bitmask (default: 15)
         visited: Whether the generation algorithm has visited the cell
+        is_in_forty_two: Whether the cell is a part of '42'
     """
 
     walls: int = 15
     visited: bool = False
+    is_in_forty_two = False
 
 
 class Direction(Enum):

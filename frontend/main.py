@@ -1,14 +1,10 @@
 from mlx import Mlx
 from backend.shortest_path import find_shortest_path
-from backend.maze_generator import maze_numbers_generator 
-
-import random
+from backend.maze_generator import maze_numbers_generator
 
 WALL_COLOR = 4294901760  # red
 DARK_BG = 0
 BLUE_BG = 4278190335
-WIDTH = 25
-HEIGHT = 25
 
 
 def my_mlx_pixel_put(img_data: tuple[memoryview, int, int, int], x: int,
@@ -127,10 +123,11 @@ def generate_pathway(start: tuple, path_string: str) -> list:
     return pathway
 
 
-if __name__ == "__main__":
+def create_visualization(width: int, height: int, start: int, end: int,
+                         is_perfect: bool) -> None:
     m = Mlx()
     mlx_ptr = m.mlx_init()
-    win_ptr = m.mlx_new_window(mlx_ptr, 500, 500, "Maze")
+    win_ptr = m.mlx_new_window(mlx_ptr, width * 20, height * 20, "Maze")
     m.mlx_clear_window(mlx_ptr, win_ptr)
 
     # config = (
@@ -155,12 +152,12 @@ if __name__ == "__main__":
     #     "86956951692C1455416928552"
     #     "C545545456C54555545444556"
     # )
-    config = maze_numbers_generator(WIDTH, HEIGHT)
+    config = maze_numbers_generator(width, height, is_perfect)
 
-    start = (random.randrange(0, WIDTH), random.randrange(0, HEIGHT))
-    end = (random.randrange(0, WIDTH), random.randrange(0, HEIGHT))
+    # start = (random.randrange(0, WIDTH), random.randrange(0, HEIGHT))
+    # end = (random.randrange(0, WIDTH), random.randrange(0, HEIGHT))
 
-    pathway_str = find_shortest_path(config, start, end)
+    pathway_str = find_shortest_path(config, start, end, width, height)
     pathway = generate_pathway(start, pathway_str)
     # pathway = generate_pathway((1, 1),
     #                            "SWSESWSESWSSSEESEEENEESESEESSSEEESSSEEENNENEE")
@@ -168,8 +165,8 @@ if __name__ == "__main__":
     for i in range(len(config)):
         img = m.mlx_new_image(mlx_ptr, 20, 20)
         img_data = m.mlx_get_data_addr(img)
-        x = (i % WIDTH)
-        y = i // HEIGHT
+        x = (i % width)
+        y = i // width
 
         if (x, y) in pathway:
             init_cell(img_data, BLUE_BG)

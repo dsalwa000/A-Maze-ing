@@ -33,21 +33,25 @@ def generate_42(
 
     # Generate 4
     maze[x][y].visited = True
+    maze[x][y].is_in_forty_two = True
     count_42 += 1
 
     for _ in range(2):
         y -= 1
         maze[x][y].visited = True
+        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         x += 1
         maze[x][y].visited = True
+        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         y -= 1
         maze[x][y].visited = True
+        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     x = 6 + (width - 10) // 2
@@ -55,31 +59,37 @@ def generate_42(
 
     # Generate 2
     maze[x][y].visited = True
+    maze[x][y].is_in_forty_two = True
     count_42 += 1
 
     for _ in range(2):
         x += 1
         maze[x][y].visited = True
+        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         y -= 1
         maze[x][y].visited = True
+        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         x -= 1
         maze[x][y].visited = True
+        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         y -= 1
         maze[x][y].visited = True
+        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         x += 1
         maze[x][y].visited = True
+        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     return count_42
@@ -227,16 +237,20 @@ def make_maze_imperfect(
 
             print(f"X before: {x}, Y before: {y}")
 
-            if x == 0 or directions_cpy[3] == 0:
+            if (x == 0 or directions_cpy[3] == 0
+                    or maze[x - 1][y].is_in_forty_two):
                 directions.remove(directions_cpy[3])
 
-            if x == width - 1 or directions_cpy[1] == 0:
+            if (x == width - 1 or directions_cpy[1] == 0
+                    or maze[x + 1][y].is_in_forty_two):
                 directions.remove(directions_cpy[1])
 
-            if y == height - 1 or directions_cpy[0] == 0:
+            if (y == height - 1 or directions_cpy[0] == 0
+                    or maze[x][y + 1].is_in_forty_two):
                 directions.remove(directions_cpy[0])
 
-            if y == 0 or directions_cpy[2] == 0:
+            if (y == 0 or directions_cpy[2] == 0
+                    or maze[x][y - 1].is_in_forty_two):
                 directions.remove(directions_cpy[2])
 
             print("After:")

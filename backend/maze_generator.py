@@ -17,7 +17,7 @@ from backend.utils import (
 )
 
 
-def maze_numbers_generator(width: int, height: int) -> str:
+def maze_numbers_generator(width: int, height: int, is_perfect: bool) -> str:
     maze: list[list[Cell]] = []
 
     # while True:
@@ -103,7 +103,6 @@ def maze_numbers_generator(width: int, height: int) -> str:
         x, y = change_position(direction, go_or_back, x, y)
         remove_wall_at_next_cell(maze[x][y], wall_to_destroy)
 
-    is_perfect = False
     if is_perfect is False:
         make_maze_imperfect(maze, height, width)
 

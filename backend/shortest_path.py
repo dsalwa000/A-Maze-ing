@@ -1,19 +1,22 @@
 from __future__ import annotations
 
-MAZE_SIZE = 25
-
 
 class Cell:
     """Class containing information about a cell
     value -- number from 0 to 15, specifying what walls the cell has
-    position -- 
+    position -- a tuple containing x and y coordinates of a cell
+    maze_width -- total width of the maze
+    maze_height -- total height of the maze
     """
-    def __init__(self, value: str, position: tuple) -> None:
+    def __init__(self, value: str, position: tuple, maze_width: int,
+                 maze_height: int) -> None:
         self.value: int = int(value, 16)
         self.position: tuple = position
         self.distance: int = 0
         self.caller: Cell = None
         self.is_visited: bool = False
+        self.maze_width = maze_width
+        self.maze_height = maze_height
 
     def add_to_queue(self, caller: 'Cell') -> None:
         """When added to the queue by the previous cell (caller), change
@@ -27,9 +30,11 @@ class Cell:
         """Get a cell to north of self if it can be entered, return None
         otherwise
         """
-        if self.position[1] <= MAZE_SIZE and not self.value % 2:
-            return get_cell_at_pos(graph, (self.position[0],
-                                           self.position[1] - 1))
+        if self.position[1] > 0 and not self.value % 2:
+            return get_cell_at_pos(graph,
+                                   (self.position[0],
+                                    self.position[1] - 1),
+                                   self.maze_width)
         else:
             return None
 
@@ -37,9 +42,14 @@ class Cell:
         """Get a cell to south of self if it can be entered, return None
         otherwise
         """
-        if self.position[1] >= 0 and not (self.value >> 2) % 2:
-            return get_cell_at_pos(graph, (self.position[0],
-                                           self.position[1] + 1))
+        if (
+            self.position[1] < self.maze_height - 1 and
+            not (self.value >> 2) % 2
+        ):
+            return get_cell_at_pos(graph,
+                                   (self.position[0],
+                                    self.position[1] + 1),
+                                   self.maze_width)
         else:
             return None
 
@@ -47,9 +57,14 @@ class Cell:
         """Get a cell to east of self if it can be entered, return None
         otherwise
         """
-        if self.position[0] <= MAZE_SIZE and not (self.value >> 1) % 2:
-            return get_cell_at_pos(graph, (self.position[0] + 1,
-                                           self.position[1]))
+        if (
+            self.position[0] < self.maze_width - 1 and
+            not (self.value >> 1) % 2
+        ):
+            return get_cell_at_pos(graph,
+                                   (self.position[0] + 1,
+                                    self.position[1]),
+                                   self.maze_width)
         else:
             return None
 
@@ -57,9 +72,11 @@ class Cell:
         """Get a cell to west of self if it can be entered, return None
         otherwise
         """
-        if self.position[0] >= 0 and not (self.value >> 3) % 2:
-            return get_cell_at_pos(graph, (self.position[0] - 1,
-                                           self.position[1]))
+        if self.position[0] > 0 and not (self.value >> 3) % 2:
+            return get_cell_at_pos(graph,
+                                   (self.position[0] - 1,
+                                    self.position[1]),
+                                   self.maze_width)
         else:
             return None
 
@@ -126,20 +143,21 @@ def parse_path(path: list) -> str:
     return path_str
 
 
-def get_cell_at_pos(graph: list, pos: tuple) -> Cell:
+def get_cell_at_pos(graph: list, pos: tuple, maze_width: int) -> Cell:
     """Get a cell in the maze based on its' position
 
     Arguments:
     graph -- list of all cells in proper order
     pos -- tuple with x and y values of the cell
     """
-    i = pos[1] * MAZE_SIZE + pos[0]
+    i = pos[1] * maze_width + pos[0]
     return graph[i]
 
 
-def find_shortest_path(config: str, start: tuple, end: tuple) -> str:
+def find_shortest_path(config: str, start: tuple, end: tuple, maze_width: int,
+                       maze_height: int) -> str:
     """Find the shortest path in the maze described by the config string
-    
+
     Arguments:
     config -- the string describing the maze
     start -- start position
@@ -148,11 +166,12 @@ def find_shortest_path(config: str, start: tuple, end: tuple) -> str:
 
     graph = []
     for i in range(len(config)):
-        cell = Cell(config[i], (i % MAZE_SIZE, i // MAZE_SIZE))
+        cell = Cell(config[i], (i % maze_width, i // maze_width), maze_width,
+                    maze_height)
         graph.append(cell)
 
     queue = []
-    queue.append(get_cell_at_pos(graph, start))
+    queue.append(get_cell_at_pos(graph, start, maze_width))
 
     finish = None
 
