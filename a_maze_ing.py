@@ -76,6 +76,7 @@ if __name__ == "__main__":
             with open(sys.argv[1], "r") as f:
                 contents = f.read()
                 contents_list = contents.split("\n")
+                contents_list = [x for x in contents_list if x[0] != '#']
                 params_unprocessed = {x.split("=")[0]: x.split("=")[1] for x
                                       in contents_list}
                 params = parce_params(params_unprocessed)
@@ -86,3 +87,9 @@ if __name__ == "__main__":
 
     except FileNotFoundError:
         print("ERROR: Config file not found")
+    except IndexError:
+        print("ERROR: Wrong format in config file")
+        print("Each line should be KEY=VALUE")
+        print("Comments are allowed and should start with '#'")
+    except Exception:
+        print("An unknown error occured")
