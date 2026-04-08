@@ -149,6 +149,7 @@ def get_cell_at_pos(graph: list, pos: tuple, maze_width: int) -> Cell:
     Arguments:
     graph -- list of all cells in proper order
     pos -- tuple with x and y values of the cell
+    maze_width -- total width of the maze
     """
     i = pos[1] * maze_width + pos[0]
     return graph[i]
@@ -162,6 +163,8 @@ def find_shortest_path(config: str, start: tuple, end: tuple, maze_width: int,
     config -- the string describing the maze
     start -- start position
     end -- end position
+    maze_width -- total width of the maze
+    maze_height -- total height of the maze
     """
 
     graph = []
@@ -194,10 +197,8 @@ def find_shortest_path(config: str, start: tuple, end: tuple, maze_width: int,
 
         path_cells.reverse()
 
-        # print([x.position for x in path_cells])
         pathway = parse_path(path_cells)
         return pathway
-        # print(pathway)
 
     else:
         print("Didnt find finish")

@@ -125,6 +125,15 @@ def generate_pathway(start: tuple, path_string: str) -> list:
 
 def create_visualization(width: int, height: int, start: int, end: int,
                          is_perfect: bool) -> None:
+    """Calls maze generator and creates a visual for the created maze
+
+    Arguments:
+    width -- width of the maze
+    height -- height of the maze
+    start -- entry point of the maze
+    end -- exit point of the maze
+    is_perfect -- whether the maze is perfect (has one solution) or not
+    """
     m = Mlx()
     mlx_ptr = m.mlx_init()
     win_ptr = m.mlx_new_window(mlx_ptr, width * 20, height * 20, "Maze")
