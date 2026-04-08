@@ -167,7 +167,7 @@ def create_and_display_maze(
     maze: list[list[Cell]],
     height: int,
     width: int
-) -> list[str]:
+) -> tuple[str]:
     maze_str = []
 
     print("Our maze:")

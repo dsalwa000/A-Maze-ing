@@ -16,25 +16,25 @@ from utils import (
     make_maze_imperfect,
 )
 
-if __name__ == "__main__":
 
+def maze_numbers_generator(width: int, height: int) -> tuple[str]:
     maze: list[list[Cell]] = []
 
-    while True:
-        try:
-            width: int = int(input("Width: "))
-            height: int = int(input("Height: "))
+    # while True:
+    #     try:
+    #         width: int = int(input("Width: "))
+    #         height: int = int(input("Height: "))
 
-            if width < 10 or height < 10:
-                raise MazeSizeError("The size of a maze is too small (min 10)")
+    #         if width < 10 or height < 10:
+    #             raise MazeSizeError("The size of a maze is too small (min 10)")
 
-            if width > 50 or height > 50:
-                raise MazeSizeError("The size of a maze is too big (max 50)")
+    #         if width > 50 or height > 50:
+    #             raise MazeSizeError("The size of a maze is too big (max 50)")
 
-            break
+    #         break
 
-        except (MazeSizeError, ValueError) as e:
-            print(e)
+    #     except (MazeSizeError, ValueError) as e:
+    #         print(e)
 
     maze: list[list[Cell]] = generate_maze(width, height)
     cells_42_amount: int = generate_42(width, height, maze)
@@ -103,10 +103,10 @@ if __name__ == "__main__":
         x, y = change_position(direction, go_or_back, x, y)
         remove_wall_at_next_cell(maze[x][y], wall_to_destroy)
 
-    maze_str: list[str] = create_and_display_maze(maze, height, width)
-
     is_perfect = False
     if is_perfect is False:
         make_maze_imperfect(maze, height, width)
 
-    maze_str: list[str] = create_and_display_maze(maze, height, width)
+    # maze_str: list[str] = create_and_display_maze(maze, height, width)
+
+    return tuple(create_and_display_maze(maze, height, width))
