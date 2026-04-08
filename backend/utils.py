@@ -3,10 +3,10 @@ This file contains utils functions which are useful
 during our converting process
 
 """
-from maze_types import Cell, Direction
+from backend.maze_types import Cell, Direction
 import random
 from typing import Optional
-from dev import show_wall_after_changes
+from backend.dev import show_wall_after_changes
 
 
 def generate_maze(width: int, height: int) -> list[list[Cell]]:
@@ -167,7 +167,7 @@ def create_and_display_maze(
     maze: list[list[Cell]],
     height: int,
     width: int
-) -> tuple[str]:
+) -> str:
     maze_str = []
 
     print("Our maze:")
@@ -180,7 +180,7 @@ def create_and_display_maze(
         print(f'"{"".join(line)}"')
         maze_str.append("".join(line))
 
-    return maze_str
+    return "".join(maze_str)
 
 
 def make_maze_imperfect(
@@ -223,7 +223,9 @@ def make_maze_imperfect(
             directions_cpy = directions.copy()
 
             print("Before: ")
-            print(directions_cpy)
+            print(directions)
+
+            print(f"X before: {x}, Y before: {y}")
 
             if x == 0 or directions_cpy[3] == 0:
                 directions.remove(directions_cpy[3])
@@ -238,7 +240,7 @@ def make_maze_imperfect(
                 directions.remove(directions_cpy[2])
 
             print("After:")
-            print(directions_cpy)
+            print(directions)
 
             if not directions:
                 continue
@@ -247,6 +249,17 @@ def make_maze_imperfect(
             maze[x][y].walls -= picked_wall
 
             show_wall_after_changes(maze[x][y], picked_wall, x, y)
+
+            if picked_wall == 1:
+                next_cell = maze[x][y + 1]
+            elif picked_wall == 2:
+                next_cell = maze[x + 1][y]
+            elif picked_wall == 4:
+                next_cell = maze[x][y - 1]
+            else:
+                next_cell = maze[x - 1][y]
+
+            remove_wall_at_next_cell(next_cell, picked_wall)
 
             start_x += 3
             end_x += 3

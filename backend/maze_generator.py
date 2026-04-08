@@ -3,9 +3,9 @@ This file is directly responisble for generating an output
 
 """
 
-from errors import MazeSizeError
-from maze_types import Cell
-from utils import (
+# from errors import MazeSizeError
+from backend.maze_types import Cell
+from backend.utils import (
     generate_maze,
     generate_42,
     avaiable_directions,
@@ -17,7 +17,7 @@ from utils import (
 )
 
 
-def maze_numbers_generator(width: int, height: int) -> tuple[str]:
+def maze_numbers_generator(width: int, height: int) -> str:
     maze: list[list[Cell]] = []
 
     # while True:
@@ -109,4 +109,4 @@ def maze_numbers_generator(width: int, height: int) -> tuple[str]:
 
     # maze_str: list[str] = create_and_display_maze(maze, height, width)
 
-    return tuple(create_and_display_maze(maze, height, width))
+    return create_and_display_maze(maze, height, width)

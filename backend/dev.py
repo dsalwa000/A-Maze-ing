@@ -1,5 +1,5 @@
 """It is useful for debugging only"""
-from maze_types import Cell
+from backend.maze_types import Cell
 
 
 def display_wall_to_destroy(wall_to_destroy: int):
