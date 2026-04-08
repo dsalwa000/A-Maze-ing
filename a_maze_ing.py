@@ -8,17 +8,64 @@ def parce_params(params_unprocessed: dict) -> dict:
     tuples of ints, PERFECT to boolean, OUTPUT_FILE remains unchanged
     """
     params = {}
-    params["WIDTH"] = int(params_unprocessed["WIDTH"])
-    params["HEIGHT"] = int(params_unprocessed["HEIGHT"])
-    params["ENTRY"] = tuple(map(lambda x: int(x),
-                                params_unprocessed["ENTRY"].split(",")))
-    params["EXIT"] = tuple(map(lambda x: int(x),
-                               params_unprocessed["EXIT"].split(",")))
-    if params_unprocessed["PERFECT"] == "True":
-        params["PERFECT"] = True
-    elif params_unprocessed["PERFECT"] == "False":
-        params["PERFECT"] = False
+    try:
+        try:
+            params["WIDTH"] = int(params_unprocessed["WIDTH"])
+            params["HEIGHT"] = int(params_unprocessed["HEIGHT"])
+
+        except ValueError:
+            print("ERROR: width and height must be integers")
+
+        try:
+            params["ENTRY"] = tuple(
+                map(lambda x: int(x),
+                    params_unprocessed["ENTRY"].split(",")))
+            params["EXIT"] = tuple(
+                map(lambda x: int(x),
+                    params_unprocessed["EXIT"].split(",")))
+
+        except ValueError:
+            print("ERROR: entry and exit must be in format 'int,int'")
+
+        try:
+            if params_unprocessed["PERFECT"] == "True":
+                params["PERFECT"] = True
+            elif params_unprocessed["PERFECT"] == "False":
+                params["PERFECT"] = False
+            else:
+                raise ValueError
+
+        except ValueError:
+            print("ERROR: 'perfect' must be either 'True' or 'False'")
+
+        try:
+            if len(params_unprocessed["OUTPUT_FILE"]) == 0:
+                raise ValueError
+            else:
+                params["OUTPUT_FILE"] = params_unprocessed["OUTPUT_FILE"]
+
+        except ValueError:
+            print("ERROR: output_file can not be empty")
+
+    except KeyError:
+        print("ERROR: not all necessary values present in config")
+        print(
+            "Necessary values: WIDTH, HEIGHT, ENTRY, EXIT, PERFECT,"
+            " OUTPUT_FILE"
+            )
     return params
+
+
+def check_final_params(params: dict) -> bool:
+    if (params.get("WIDTH") is None or
+            params.get("HEIGHT") is None or
+            params.get("ENTRY") is None or
+            params.get("EXIT") is None or
+            params.get("OUTPUT_FILE") is None or
+            params.get("PERFECT") is None):
+        return False
+    else:
+        return True
 
 
 if __name__ == "__main__":
@@ -32,10 +79,10 @@ if __name__ == "__main__":
                 params_unprocessed = {x.split("=")[0]: x.split("=")[1] for x
                                       in contents_list}
                 params = parce_params(params_unprocessed)
-                print(params)
-                create_visualization(params["WIDTH"], params["HEIGHT"],
-                                     params["ENTRY"], params["EXIT"],
-                                     params["PERFECT"])
+                if check_final_params(params):
+                    create_visualization(params["WIDTH"], params["HEIGHT"],
+                                         params["ENTRY"], params["EXIT"],
+                                         params["PERFECT"])
 
     except FileNotFoundError:
         print("ERROR: Config file not found")
