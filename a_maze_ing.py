@@ -1,5 +1,6 @@
 import sys
 from frontend.main import create_visualization
+from backend.errors import MazeSizeError
 
 
 def parce_params(params_unprocessed: dict) -> dict:
@@ -57,6 +58,7 @@ def parce_params(params_unprocessed: dict) -> dict:
 
 
 def check_final_params(params: dict) -> bool:
+    """Check that all parameters for a maze were properly added"""
     if (params.get("WIDTH") is None or
             params.get("HEIGHT") is None or
             params.get("ENTRY") is None or
@@ -66,6 +68,15 @@ def check_final_params(params: dict) -> bool:
         return False
     else:
         return True
+
+
+def check_maze_possibility(params: dict) -> None:
+    """Check if maze size is appropriate"""
+    if (params["WIDTH"] <= params["ENTRY"][0] or
+            params["WIDTH"] <= params["EXIT"][0] or
+            params["HEIGHT"] <= params["ENTRY"][1] or
+            params["HEIGHT"] <= params["EXIT"][1]):
+        raise MazeSizeError
 
 
 if __name__ == "__main__":
@@ -81,6 +92,7 @@ if __name__ == "__main__":
                                       in contents_list}
                 params = parce_params(params_unprocessed)
                 if check_final_params(params):
+                    check_maze_possibility(params)
                     create_visualization(params["WIDTH"], params["HEIGHT"],
                                          params["ENTRY"], params["EXIT"],
                                          params["PERFECT"])
@@ -91,5 +103,7 @@ if __name__ == "__main__":
         print("ERROR: Wrong format in config file")
         print("Each line should be KEY=VALUE")
         print("Comments are allowed and should start with '#'")
+    except MazeSizeError:
+        print("ERROR: bad maze size, or entry and exit are out of bounds")
     except Exception:
         print("An unknown error occured")
