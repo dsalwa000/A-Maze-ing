@@ -1,4 +1,3 @@
--- seed
 -- export maze to file
 -- user actions for generated maze
 -- code reusability (main class, export as package that can be pip installed)

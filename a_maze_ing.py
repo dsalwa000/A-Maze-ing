@@ -94,7 +94,6 @@ if __name__ == "__main__":
 
                 contents_list = contents.split("\n")
                 contents_list = [x for x in contents_list if x[0] != '#']
-
                 params_unprocessed: dict[str, str] = {
                     x.split("=")[0]: x.split("=")[1] for x in contents_list
                 }
@@ -115,5 +114,5 @@ if __name__ == "__main__":
         print("Comments are allowed and should start with '#'")
     except MazeSizeError:
         print("ERROR: bad maze size, or entry and exit are out of bounds")
-    except Exception:
-        print("An unknown error occured")
+    except Exception as e:
+        print(f"An unexpected error occured: {e}")
