@@ -155,8 +155,13 @@ def get_cell_at_pos(graph: list, pos: tuple, maze_width: int) -> Cell:
     return graph[i]
 
 
-def find_shortest_path(config: str, start: tuple, end: tuple, maze_width: int,
-                       maze_height: int) -> str:
+def find_shortest_path(
+    config: str,
+    start: tuple,
+    end: tuple,
+    maze_width: int,
+    maze_height: int
+) -> str:
     """Find the shortest path in the maze described by the config string
 
     Arguments:

@@ -6,7 +6,6 @@ during our converting process
 from backend.maze_types import Cell, Direction
 import random
 from typing import Optional
-from backend.dev import show_wall_after_changes
 
 
 def generate_maze(width: int, height: int) -> list[list[Cell]]:
@@ -33,25 +32,21 @@ def generate_42(
 
     # Generate 4
     maze[x][y].visited = True
-    maze[x][y].is_in_forty_two = True
     count_42 += 1
 
     for _ in range(2):
         y -= 1
         maze[x][y].visited = True
-        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         x += 1
         maze[x][y].visited = True
-        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         y -= 1
         maze[x][y].visited = True
-        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     x = 6 + (width - 10) // 2
@@ -59,37 +54,31 @@ def generate_42(
 
     # Generate 2
     maze[x][y].visited = True
-    maze[x][y].is_in_forty_two = True
     count_42 += 1
 
     for _ in range(2):
         x += 1
         maze[x][y].visited = True
-        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         y -= 1
         maze[x][y].visited = True
-        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         x -= 1
         maze[x][y].visited = True
-        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         y -= 1
         maze[x][y].visited = True
-        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     for _ in range(2):
         x += 1
         maze[x][y].visited = True
-        maze[x][y].is_in_forty_two = True
         count_42 += 1
 
     return count_42
@@ -173,31 +162,57 @@ def remove_wall_at_next_cell(cell: Cell, wall: int) -> None:
         cell.walls -= 2
 
 
-def create_and_display_maze(
+def create_final_string(
     maze: list[list[Cell]],
     height: int,
     width: int
-) -> str:
+) -> list[str]:
     maze_str = []
 
-    print("Our maze:")
     for j in range(height - 1, -1, -1):
         line = []
 
         for i in range(0, width):
             line.append(format(maze[i][j].walls & 0xF, "x"))
 
-        print(f'"{"".join(line)}"')
         maze_str.append("".join(line))
 
-    return "".join(maze_str)
+    return maze_str
+
+
+def go_to_next_cell(
+    maze: list[list[Cell]],
+    picked_wall: int,
+    x: int,
+    y: int
+) -> Cell:
+    """
+    The function goes to a next cell and returns it
+
+    """
+    next_cell: Cell = None
+
+    print(picked_wall)
+
+    if picked_wall == 1:
+        next_cell = maze[x][y + 1]
+    elif picked_wall == 2:
+        next_cell = maze[x + 1][y]
+    elif picked_wall == 4:
+        next_cell = maze[x][y - 1]
+    elif picked_wall == 8:
+        next_cell = maze[x - 1][y]
+    
+    print(next_cell)
+
+    return next_cell
 
 
 def make_maze_imperfect(
     maze: list[list[Cell]],
     height: int,
     width: int
-) -> list[str]:
+) -> None:
     """
     This function randomly destroys walls inside a maze
     to makes it imperfect
@@ -208,7 +223,6 @@ def make_maze_imperfect(
     """
     start_y: int = height - 1
     end_y: int = height - 3
-    count_changes: int = 0
 
     while end_y >= 0:
         start_x: int = 0
@@ -218,8 +232,12 @@ def make_maze_imperfect(
             x = random.randint(start_x, end_x)
             y = random.randint(end_y, start_y)
 
+            print(f"x and y: {x}, {y}")
+
             # It secures the 42 sign
             if maze[x][y].walls == 15:
+                start_x += 3
+                end_x += 3
                 continue
 
             """
@@ -230,56 +248,35 @@ def make_maze_imperfect(
             directions: list[int] = [
                 maze[x][y].walls & mask for mask in (1, 2, 4, 8)
             ]
-            directions_cpy = directions.copy()
-
-            print("Before: ")
-            print(directions)
-
-            print(f"X before: {x}, Y before: {y}")
+            directions_cpy: list[int] = directions.copy()
 
             if (x == 0 or directions_cpy[3] == 0
-                    or maze[x - 1][y].is_in_forty_two):
+                    or maze[x - 1][y].walls == 15):
                 directions.remove(directions_cpy[3])
 
             if (x == width - 1 or directions_cpy[1] == 0
-                    or maze[x + 1][y].is_in_forty_two):
+                    or maze[x + 1][y].walls == 15):
                 directions.remove(directions_cpy[1])
 
             if (y == height - 1 or directions_cpy[0] == 0
-                    or maze[x][y + 1].is_in_forty_two):
+                    or maze[x][y + 1].walls == 15):
                 directions.remove(directions_cpy[0])
 
             if (y == 0 or directions_cpy[2] == 0
-                    or maze[x][y - 1].is_in_forty_two):
+                    or maze[x][y - 1].walls == 15):
                 directions.remove(directions_cpy[2])
-
-            print("After:")
-            print(directions)
 
             if not directions:
                 continue
 
-            picked_wall = random.choice(directions)
+            picked_wall: Cell = random.choice(directions)
             maze[x][y].walls -= picked_wall
 
-            show_wall_after_changes(maze[x][y], picked_wall, x, y)
-
-            if picked_wall == 1:
-                next_cell = maze[x][y + 1]
-            elif picked_wall == 2:
-                next_cell = maze[x + 1][y]
-            elif picked_wall == 4:
-                next_cell = maze[x][y - 1]
-            else:
-                next_cell = maze[x - 1][y]
-
+            next_cell = go_to_next_cell(maze, picked_wall, x, y)
             remove_wall_at_next_cell(next_cell, picked_wall)
 
             start_x += 3
             end_x += 3
-            count_changes += 1
 
         start_y -= 3
         end_y -= 3
-
-    print(f"Changes: {count_changes}\n")

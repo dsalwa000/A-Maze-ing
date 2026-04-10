@@ -1,5 +1,5 @@
 run: install
-	python3 a_maze_ing.py
+	python3 a_maze_ing.py config.txt
 
 install: frontend/mlx-2.2-py3-none-any.whl
 	pip install frontend/mlx-2.2-py3-none-any.whl
