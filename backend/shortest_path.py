@@ -2,14 +2,21 @@ from __future__ import annotations
 
 
 class Cell:
-    """Class containing information about a cell
+    """
+    Class containing information about a cell
     value -- number from 0 to 15, specifying what walls the cell has
     position -- a tuple containing x and y coordinates of a cell
     maze_width -- total width of the maze
     maze_height -- total height of the maze
+
     """
-    def __init__(self, value: str, position: tuple, maze_width: int,
-                 maze_height: int) -> None:
+    def __init__(
+        self,
+        value: str,
+        position: tuple,
+        maze_width: int,
+        maze_height: int
+    ) -> None:
         self.value: int = int(value, 16)
         self.position: tuple = position
         self.distance: int = 0
@@ -19,37 +26,47 @@ class Cell:
         self.maze_height = maze_height
 
     def add_to_queue(self, caller: 'Cell') -> None:
-        """When added to the queue by the previous cell (caller), change
+        """
+        When added to the queue by the previous cell (caller), change
         internal properties where needed
+
         """
         self.caller = caller
         self.distance = caller.distance + 1
         self.is_visited = True
 
     def north(self, graph: list) -> Cell | None:
-        """Get a cell to north of self if it can be entered, return None
+        """
+        Get a cell to north of self if it can be entered, return None
         otherwise
+
         """
         if self.position[1] > 0 and not self.value % 2:
-            return get_cell_at_pos(graph,
-                                   (self.position[0],
-                                    self.position[1] - 1),
-                                   self.maze_width)
+            return get_cell_at_pos(
+                graph,
+                (self.position[0], self.position[1] - 1),
+                self.maze_width
+            )
+
         else:
             return None
 
     def south(self, graph: list) -> Cell | None:
-        """Get a cell to south of self if it can be entered, return None
+        """
+        Get a cell to south of self if it can be entered, return None
         otherwise
+
         """
         if (
             self.position[1] < self.maze_height - 1 and
             not (self.value >> 2) % 2
         ):
-            return get_cell_at_pos(graph,
-                                   (self.position[0],
-                                    self.position[1] + 1),
-                                   self.maze_width)
+            return get_cell_at_pos(
+                graph,
+                (self.position[0], self.position[1] + 1),
+                self.maze_width
+            )
+
         else:
             return None
 
@@ -73,10 +90,11 @@ class Cell:
         otherwise
         """
         if self.position[0] > 0 and not (self.value >> 3) % 2:
-            return get_cell_at_pos(graph,
-                                   (self.position[0] - 1,
-                                    self.position[1]),
-                                   self.maze_width)
+            return get_cell_at_pos(
+                graph,
+                (self.position[0] - 1, self.position[1]),
+                self.maze_width
+            )
         else:
             return None
 
@@ -150,6 +168,7 @@ def get_cell_at_pos(graph: list, pos: tuple, maze_width: int) -> Cell:
     graph -- list of all cells in proper order
     pos -- tuple with x and y values of the cell
     maze_width -- total width of the maze
+
     """
     i = pos[1] * maze_width + pos[0]
     return graph[i]
@@ -170,6 +189,7 @@ def find_shortest_path(
     end -- end position
     maze_width -- total width of the maze
     maze_height -- total height of the maze
+
     """
 
     graph = []

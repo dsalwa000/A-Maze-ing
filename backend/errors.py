@@ -7,3 +7,7 @@ part of the project
 
 class MazeSizeError(Exception):
     pass
+
+
+class MazeParamsError(Exception):
+    pass

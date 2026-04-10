@@ -175,6 +175,7 @@ def create_final_string(
         for i in range(0, width):
             line.append(format(maze[i][j].walls & 0xF, "x"))
 
+        print("".join(line))
         maze_str.append("".join(line))
 
     return maze_str
@@ -192,8 +193,6 @@ def go_to_next_cell(
     """
     next_cell: Cell = None
 
-    print(picked_wall)
-
     if picked_wall == 1:
         next_cell = maze[x][y + 1]
     elif picked_wall == 2:
@@ -202,8 +201,6 @@ def go_to_next_cell(
         next_cell = maze[x][y - 1]
     elif picked_wall == 8:
         next_cell = maze[x - 1][y]
-    
-    print(next_cell)
 
     return next_cell
 
@@ -231,8 +228,6 @@ def make_maze_imperfect(
         while end_x < width:
             x = random.randint(start_x, end_x)
             y = random.randint(end_y, start_y)
-
-            print(f"x and y: {x}, {y}")
 
             # It secures the 42 sign
             if maze[x][y].walls == 15:
