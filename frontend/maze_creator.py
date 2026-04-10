@@ -1,6 +1,6 @@
 from mlx import Mlx
 from backend.shortest_path import find_shortest_path
-from backend.maze_generator import maze_numbers_generator
+from backend.numbers_generator import maze_numbers_generator
 
 WALL_COLOR = 4294901760  # red
 DARK_BG = 0
@@ -65,6 +65,7 @@ def draw_wall(data, start, end):
     data -- image information
     start -- top left coordinate of the wall
     end -- bottom right coordinate of the wall
+
     """
     for x in range(start[0], end[0]):
         for y in range(start[1], end[1]):
@@ -77,6 +78,7 @@ def draw_cell(data, code: int):
     Arguments:
     data -- image information
     code -- value from 0 to 15 describing the cell's walls
+
     """
     if has_north(code):
         draw_wall(data, (0, 0), (20, 2))
@@ -99,17 +101,23 @@ def init_cell(data, color):
             my_mlx_pixel_put(data, x, y, color)
 
 
-def generate_pathway(start: tuple, path_string: str) -> list:
-    """Create a pathway list from a string
+def generate_pathway(
+    start: tuple[int, int],
+    path_string: str
+) -> list[tuple[int, int]]:
+    """
+    Create a pathway list from a string
 
     start -- starting coordinate of the maze
     path_string -- string consisting of letters S, N, W, E describing a path
     to solve the maze
     returns a list of tuples with coordinates of each step on the pathway
+
     """
-    pathway = []
-    current_pos = start
+    pathway: list[tuple[int, int]] = []
+    current_pos: tuple[int, int] = start
     pathway.append(current_pos)
+
     for i in range(len(path_string)):
         if path_string[i] == 'S':
             current_pos = (current_pos[0], current_pos[1] + 1)
@@ -120,11 +128,17 @@ def generate_pathway(start: tuple, path_string: str) -> list:
         elif path_string[i] == 'E':
             current_pos = (current_pos[0] + 1, current_pos[1])
         pathway.append(current_pos)
+
     return pathway
 
 
-def create_visualization(width: int, height: int, start: int, end: int,
-                         is_perfect: bool) -> None:
+def create_visualization(
+    width: int,
+    height: int,
+    start: tuple[int, int],
+    end: tuple[int, int],
+    is_perfect: bool
+) -> None:
     """Calls maze generator and creates a visual for the created maze
 
     Arguments:
@@ -133,43 +147,49 @@ def create_visualization(width: int, height: int, start: int, end: int,
     start -- entry point of the maze
     end -- exit point of the maze
     is_perfect -- whether the maze is perfect (has one solution) or not
+
     """
     m = Mlx()
     mlx_ptr = m.mlx_init()
     win_ptr = m.mlx_new_window(mlx_ptr, width * 20, height * 20, "Maze")
     m.mlx_clear_window(mlx_ptr, win_ptr)
 
-    # config = (
-    #     "9515391539551795151151153"
-    #     "EBABAE812853C1412BA812812"
-    #     "96A8416A84545412AC4282C2A"
-    #     "C3A83816A9395384453A82D02"
-    #     "96842A852AC07AAD13A8283C2"
-    #     "C1296C43AAB83AA92AA8686BA"
-    #     "92E853968428444682AC12902"
-    #     "AC3814452FA83FFF82C52C42A"
-    #     "85684117AFC6857FAC1383D06"
-    #     "C53AD043AFFFAFFF856AA8143"
-    #     "91441294297FAFD501142C6BA"
-    #     "AA912AC3843FAFFF82856D52A"
-    #     "842A8692A92B8517C4451552A"
-    #     "816AC384468285293917A9542"
-    #     "C416928513C443A828456C3BA"
-    #     "91416AA92C393A82801553AAA"
-    #     "A81292AA814682C6A8693C6AA"
-    #     "A8442C6C2C1168552C16A9542"
-    #     "86956951692C1455416928552"
-    #     "C545545456C54555545444556"
-    # )
-    config = maze_numbers_generator(width, height, is_perfect)
+    config_list: list[str] = maze_numbers_generator(width, height, is_perfect)
+    config: str = "".join(config_list)
 
-    # start = (random.randrange(0, WIDTH), random.randrange(0, HEIGHT))
-    # end = (random.randrange(0, WIDTH), random.randrange(0, HEIGHT))
+    pathway_str: str = find_shortest_path(config, start, end, width, height)
+    pathway: list[tuple[int, int]] = generate_pathway(start, pathway_str)
 
-    pathway_str = find_shortest_path(config, start, end, width, height)
-    pathway = generate_pathway(start, pathway_str)
-    # pathway = generate_pathway((1, 1),
-    #                            "SWSESWSESWSSSEESEEENEESESEESSSEEESSSEEENNENEE")
+    try:
+        with open("output_maze.txt", "w", encoding="utf-8") as file:
+            """
+            We are writing our final maze configuration inside
+            output_maze.txt, how it should looks like:
+
+            d515155513
+            954543d56a
+            c3f916fffa
+            92fc4157fa
+            aafffafffa
+            a817fafd52
+            c6c3fafffa
+            953c52953a
+            83c3d283aa
+            ec5456c6c6
+
+            (0, 0)
+            (9, 9)
+            EEEEEEEEESSSSSSSSS
+
+            """
+            file.writelines(f"{line}\n" for line in config_list)
+
+            file.write(f"\n{start[0], start[1]}\n")
+            file.write(f"{end[0], end[1]}\n")
+            file.write(pathway_str)
+
+    except Exception as e:
+        print(f"Error regarding output_maze.txt file: {e}")
 
     for i in range(len(config)):
         img = m.mlx_new_image(mlx_ptr, 20, 20)

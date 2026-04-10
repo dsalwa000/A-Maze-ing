@@ -12,29 +12,21 @@ from backend.utils import (
     change_position,
     pick_direction,
     remove_wall_at_next_cell,
-    create_and_display_maze,
+    create_final_string,
     make_maze_imperfect,
 )
 
 
-def maze_numbers_generator(width: int, height: int, is_perfect: bool) -> str:
-    maze: list[list[Cell]] = []
+def maze_numbers_generator(
+    width: int,
+    height: int,
+    is_perfect: bool
+) -> list[str]:
+    """
+    This function randomly create a list of numbers which indicates how walls
+    should be displayed.
 
-    # while True:
-    #     try:
-    #         width: int = int(input("Width: "))
-    #         height: int = int(input("Height: "))
-
-    #         if width < 10 or height < 10:
-    #             raise MazeSizeError("The size of a maze is too small (min 10)")
-
-    #         if width > 50 or height > 50:
-    #             raise MazeSizeError("The size of a maze is too big (max 50)")
-
-    #         break
-
-    #     except (MazeSizeError, ValueError) as e:
-    #         print(e)
+    """
 
     maze: list[list[Cell]] = generate_maze(width, height)
     cells_42_amount: int = generate_42(width, height, maze)
@@ -106,6 +98,4 @@ def maze_numbers_generator(width: int, height: int, is_perfect: bool) -> str:
     if is_perfect is False:
         make_maze_imperfect(maze, height, width)
 
-    # maze_str: list[str] = create_and_display_maze(maze, height, width)
-
-    return create_and_display_maze(maze, height, width)
+    return create_final_string(maze, height, width)
