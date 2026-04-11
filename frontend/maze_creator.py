@@ -1,4 +1,5 @@
 from mlx import Mlx
+from MazeGenerator import MazeGenerator
 import os
 
 COLOR_RED = 4294901760
@@ -204,7 +205,6 @@ class MazeVisualizer():
             self.draw_cell(img_data, int(self.config[i], 16), (x, y), color)
 
     def put_image(self):
-        print(self.images)
         self.m.mlx_put_image_to_window(
             self.mlx_ptr,
             self.win_ptr,
@@ -219,19 +219,16 @@ class MazeVisualizer():
             self.width * CELL_SIZE,
             self.height * CELL_SIZE,
         )
-        print("created red")
         self.img_green = self.m.mlx_new_image(
             self.mlx_ptr,
             self.width * CELL_SIZE,
             self.height * CELL_SIZE,
         )
-        print("created green")
         self.img_blue = self.m.mlx_new_image(
             self.mlx_ptr,
             self.width * CELL_SIZE,
             self.height * CELL_SIZE,
         )
-        print("created blue")
         img_data_r = self.m.mlx_get_data_addr(self.img_red)
         img_data_g = self.m.mlx_get_data_addr(self.img_green)
         img_data_b = self.m.mlx_get_data_addr(self.img_blue)
@@ -239,11 +236,8 @@ class MazeVisualizer():
         self.images = [self.img_red, self.img_green, self.img_blue]
 
         self.draw_cells(img_data_r, COLOR_RED)
-        print("drew red")
         self.draw_cells(img_data_g, COLOR_GR)
-        print("drew green")
         self.draw_cells(img_data_b, COLOR_BL)
-        print("drew blue")
 
     def change_color(self):
         self.color_index += 1
@@ -280,18 +274,28 @@ class MazeVisualizer():
             0
         )
 
+    def regenerate_maze(self):
+        g = MazeGenerator()
+        self.config = g.config
+        self.pathway = self.generate_pathway(g.entry, g.shortest_path)
+        self.start = g.entry
+        self.end = g.exit
+        self.width = g.width
+        self.height = g.height
+        self.gen_images()
+        self.m.mlx_clear_window(self.mlx_ptr, self.win_ptr)
+        self.put_image()
+
 
 def key_hook(keycode: int, param) -> None:
     if keycode == 49:
-        print("user selected 1")
+        param["visualizer"].regenerate_maze()
     elif keycode == 50:
         param["visualizer"].draw_path = not param["visualizer"].draw_path
         param["visualizer"].redraw_pathway()
     elif keycode == 51:
-        param["m"].mlx_key_hook(param["win"], empty_hook, param)
         param["visualizer"].change_color()
         param["visualizer"].put_image()
-        param["m"].mlx_key_hook(param["win"], key_hook, param)
     if keycode == 52:
         param["m"].mlx_destroy_window(param["mlx"], param["win"])
         os._exit(0)

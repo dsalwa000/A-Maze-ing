@@ -4,9 +4,8 @@ It is a stanalone module which allows you to generates the maze
 """
 from backend.numbers_generator import maze_numbers_generator
 from backend.errors import MazeSizeError, MazeParamsError
-from frontend.maze_creator import create_visualization
 from backend.shortest_path import find_shortest_path
-from a_maze_ing import parce_params, check_final_params, check_maze_possibility
+from utils import parce_params, check_final_params, check_maze_possibility
 import random
 import sys
 
@@ -57,7 +56,8 @@ class MazeGenerator:
         self.exit: tuple[int, int] = self.params["EXIT"]
         self.is_perfect: bool = self.params["PERFECT"]
 
-        random.seed(self.params["SEED"])
+        if self.params.get("SEED") is not None:
+            random.seed(self.params["SEED"])
 
         self.config_list: list[str] = maze_numbers_generator(
             self.width,
@@ -76,6 +76,7 @@ class MazeGenerator:
         )
 
     def render_maze(self) -> None:
+        from frontend.maze_creator import create_visualization
         create_visualization(
             self.width,
             self.height,
@@ -123,14 +124,3 @@ class MazeGenerator:
         print(f"\n{self.entry[0], self.entry[1]}\n")
         print(f"{self.exit[0], self.exit[1]}\n")
         print(self.shortest_path)
-
-
-if __name__ == "__main__":
-    """
-    Let's test
-
-    """
-    maze_generator = MazeGenerator()
-
-    maze_generator.render_to_file()
-    maze_generator.render_maze()
