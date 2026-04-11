@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by <dsalwa> and <stitov>*
+*This project has been created as part of the 42 curriculum by dsalwa and stitov*
 
 # A-Maze-ing
 
@@ -155,8 +155,8 @@ All generated content was reviewed, tested, and fully understood before use.
 
 ### Roles
 
-* <dsalwa> – backend part, code structure, work organizing
-* <stitov> – frontend part, design, testing
+* dsalwa – backend part, code structure, work organizing
+* stitov – frontend part, design, testing
 
 ---
 
