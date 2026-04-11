@@ -1,4 +1,5 @@
 from __future__ import annotations
+from mazegen.backend.errors import MazeGeneralError
 
 
 class Cell:
@@ -20,7 +21,7 @@ class Cell:
         self.value: int = int(value, 16)
         self.position: tuple = position
         self.distance: int = 0
-        self.caller: Cell = None
+        self.caller: Cell | None = None
         self.is_visited: bool = False
         self.maze_width = maze_width
         self.maze_height = maze_height
@@ -161,7 +162,11 @@ def parse_path(path: list) -> str:
     return path_str
 
 
-def get_cell_at_pos(graph: list, pos: tuple, maze_width: int) -> Cell:
+def get_cell_at_pos(
+    graph: list[Cell],
+    pos: tuple[int, int],
+    maze_width: int
+) -> Cell:
     """Get a cell in the maze based on its' position
 
     Arguments:
@@ -193,15 +198,20 @@ def find_shortest_path(
     """
 
     graph = []
+    cell: Cell | None = None
     for i in range(len(config)):
-        cell = Cell(config[i], (i % maze_width, i // maze_width), maze_width,
-                    maze_height)
+        cell = Cell(
+            config[i],
+            (i % maze_width, i // maze_width),
+            maze_width,
+            maze_height
+        )
         graph.append(cell)
 
     queue = []
     queue.append(get_cell_at_pos(graph, start, maze_width))
 
-    finish = None
+    finish: Cell | None = None
 
     while len(queue) > 0:
         queue = make_step(graph, queue)
@@ -215,7 +225,10 @@ def find_shortest_path(
         path_cells = []
         while cell.position != start:
             path_cells.append(cell)
-            cell = cell.caller
+            caller = cell.caller
+            if caller is None:
+                raise MazeGeneralError("There is no solution for this maze!")
+            cell = caller
         path_cells.append(cell)
 
         path_cells.reverse()
@@ -224,5 +237,4 @@ def find_shortest_path(
         return pathway
 
     else:
-        print("Didnt find finish")
-        return None
+        raise MazeGeneralError("There is no solution for this maze!")

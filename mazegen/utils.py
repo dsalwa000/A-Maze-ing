@@ -1,14 +1,14 @@
 from mazegen.backend.errors import MazeSizeError
 
 
-def parce_params(params_unprocessed: dict[str, str]) -> dict[str, object]:
+def parce_params(params_unprocessed: dict[str, str]) -> dict:
     """
     Turns values of dict from strings to proper types
     WIDTH and HEIGHT are converted to int, ENTRY and EXIT to
     tuples of ints, PERFECT to boolean, OUTPUT_FILE remains unchanged
 
     """
-    params = {}
+    params: dict = {}
     try:
         try:
             params["WIDTH"] = int(params_unprocessed["WIDTH"])

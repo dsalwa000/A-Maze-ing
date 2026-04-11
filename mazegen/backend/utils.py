@@ -190,18 +190,16 @@ def go_to_next_cell(
     The function goes to a next cell and returns it
 
     """
-    next_cell: Cell = None
-
     if picked_wall == 1:
-        next_cell = maze[x][y + 1]
-    elif picked_wall == 2:
-        next_cell = maze[x + 1][y]
-    elif picked_wall == 4:
-        next_cell = maze[x][y - 1]
-    elif picked_wall == 8:
-        next_cell = maze[x - 1][y]
+        return maze[x][y + 1]
+    if picked_wall == 2:
+        return maze[x + 1][y]
+    if picked_wall == 4:
+        return maze[x][y - 1]
+    if picked_wall == 8:
+        return maze[x - 1][y]
 
-    return next_cell
+    raise ValueError(f"Invalid wall mask: {picked_wall}")
 
 
 def make_maze_imperfect(
@@ -263,10 +261,10 @@ def make_maze_imperfect(
             if not directions:
                 continue
 
-            picked_wall: Cell = random.choice(directions)
+            picked_wall: int = random.choice(directions)
             maze[x][y].walls -= picked_wall
 
-            next_cell = go_to_next_cell(maze, picked_wall, x, y)
+            next_cell: Cell = go_to_next_cell(maze, picked_wall, x, y)
             remove_wall_at_next_cell(next_cell, picked_wall)
 
             start_x += 3

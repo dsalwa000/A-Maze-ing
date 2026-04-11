@@ -11,3 +11,7 @@ class MazeSizeError(Exception):
 
 class MazeParamsError(Exception):
     pass
+
+
+class MazeGeneralError(Exception):
+    pass
