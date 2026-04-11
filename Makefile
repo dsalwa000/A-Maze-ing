@@ -1,14 +1,14 @@
 run: install
 	python3 a_maze_ing.py config.txt
 
-install: frontend/mlx-2.2-py3-none-any.whl
-	pip install frontend/mlx-2.2-py3-none-any.whl
+install: mlx-2.2-py3-none-any.whl
+	pip install mlx-2.2-py3-none-any.whl
 
 debug: install
 	venv/bin/python3 -m pdb a_maze_ing.py
 
 clean:
-	rm -rf backend/__pycache__ frontend/__pycache__
+	rm -rf */__pycache__
 
 lint:
 	flake8 .
