@@ -5,8 +5,11 @@ import os
 COLOR_RED = 4294901760
 COLOR_GR = 4278255360
 COLOR_BL = 4278190335
+COLOR_BRIGHT_BL = 4278215935
+COLOR_WHITE = 4294967295
 DARK_BG = 4278190080
-PATH_BG = COLOR_BL
+PATH_BG = COLOR_BRIGHT_BL
+FT_COLOR = COLOR_WHITE
 COLORS = [COLOR_RED, COLOR_GR, COLOR_BL]
 CELL_SIZE = 20
 
@@ -36,6 +39,7 @@ class MazeVisualizer():
         self.pathway = self.generate_pathway(start, pathway)
         self.color_index = 0
         self.draw_path = True
+        self.color_forty_two = False
         self.img_red = None
         self.img_green = None
         self.img_blue = None
@@ -199,8 +203,6 @@ class MazeVisualizer():
 
             if self.draw_path and (x, y) in self.pathway:
                 self.init_cell(img_data, PATH_BG, (x, y))
-            # else:
-            #     self.init_cell(img_data, DARK_BG, (x, y))
 
             self.draw_cell(img_data, int(self.config[i], 16), (x, y), color)
 
@@ -274,6 +276,35 @@ class MazeVisualizer():
             0
         )
 
+    def recolor_forty_two(self):
+        for j in range(len(self.images)):
+            current_img = self.images[j]
+            img_data = self.m.mlx_get_data_addr(current_img)
+            for i in range(len(self.config)):
+
+                x = (i % self.width)
+                y = i // self.width
+
+                if int(self.config[i], 16) == 15:
+                    if self.color_forty_two:
+                        self.init_cell(img_data, FT_COLOR, (x, y))
+                    else:
+                        self.init_cell(img_data, DARK_BG, (x, y))
+
+                    self.draw_cell(
+                        img_data,
+                        int(self.config[i], 16),
+                        (x, y),
+                        COLORS[j]
+                    )
+        self.m.mlx_put_image_to_window(
+            self.mlx_ptr,
+            self.win_ptr,
+            self.images[self.color_index],
+            0,
+            0
+        )
+
     def regenerate_maze(self):
         g = MazeGenerator()
         self.config = g.config
@@ -285,6 +316,7 @@ class MazeVisualizer():
         self.gen_images()
         self.m.mlx_clear_window(self.mlx_ptr, self.win_ptr)
         self.put_image()
+        g.render_to_file()
 
 
 def key_hook(keycode: int, param) -> None:
@@ -296,10 +328,11 @@ def key_hook(keycode: int, param) -> None:
     elif keycode == 51:
         param["visualizer"].change_color()
         param["visualizer"].put_image()
-    if keycode == 52:
+    elif keycode == 52:
+        param["visualizer"].color_forty_two = not param["visualizer"].color_forty_two
+        param["visualizer"].recolor_forty_two()
+    elif keycode == 53 or keycode == 65307:
         param["m"].mlx_destroy_window(param["mlx"], param["win"])
-        os._exit(0)
-    if keycode == 65307:  # ESC (Linux)
         os._exit(0)
 
 
