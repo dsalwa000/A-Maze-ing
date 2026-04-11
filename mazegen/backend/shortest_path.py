@@ -181,8 +181,8 @@ def get_cell_at_pos(
 
 def find_shortest_path(
     config: str,
-    start: tuple,
-    end: tuple,
+    start: tuple[int, int],
+    end: tuple[int, int],
     maze_width: int,
     maze_height: int
 ) -> str:
