@@ -57,7 +57,6 @@ class MazeVisualizer():
         self.win_ptr = win_ptr
         self.width = width
         self.height = height
-        self.pathway = []
         self.config = config
         self.start = start
         self.end = end
@@ -438,7 +437,7 @@ def create_visualization(
     height: int,
     start: tuple[int, int],
     end: tuple[int, int],
-    config_list: list[str],
+    config: str,
     pathway_str: str
 ) -> None:
     """
@@ -449,7 +448,7 @@ def create_visualization(
     height -- height of the maze
     start -- entry point of the maze
     end -- exit point of the maze
-    config_list -- the maze in the list of strings format
+    config -- the maze in the string format
     pathway_str -- the pathway from start to end as a string
     """
     try:
@@ -462,8 +461,6 @@ def create_visualization(
             "Maze"
         )
         m.mlx_clear_window(mlx_ptr, win_ptr)
-
-        config: str = "".join(config_list)
 
         visualizer = MazeVisualizer(
             m,

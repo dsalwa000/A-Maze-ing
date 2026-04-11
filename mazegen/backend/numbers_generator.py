@@ -38,7 +38,7 @@ def maze_numbers_generator(
     """
     x = 0
     y = 0
-    saved_positions: list[tuple[int]] = []
+    saved_positions: list[tuple[int, int]] = []
     count = 1
 
     while (width * height) - cells_42_amount > count:
@@ -83,17 +83,15 @@ def maze_numbers_generator(
         parts, to_save = picked_direction
 
         direction, go_or_back, wall_to_destroy = parts
-        go_or_back = int(go_or_back)
-        wall_to_destroy = int(wall_to_destroy)
 
-        maze[x][y].walls -= wall_to_destroy
+        maze[x][y].walls -= int(wall_to_destroy)
         count += 1
 
         if to_save is True:
             saved_positions.insert(0, (x, y))
 
-        x, y = change_position(direction, go_or_back, x, y)
-        remove_wall_at_next_cell(maze[x][y], wall_to_destroy)
+        x, y = change_position(direction, int(go_or_back), x, y)
+        remove_wall_at_next_cell(maze[x][y], int(wall_to_destroy))
 
     if is_perfect is False:
         make_maze_imperfect(maze, height, width)

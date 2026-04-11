@@ -34,7 +34,9 @@ class MazeGenerator:
                 params_unprocessed: dict[str, str] = {
                     x.split("=")[0]: x.split("=")[1] for x in contents_list
                 }
-                self.params: dict = parce_params(params_unprocessed)
+                self.params = parce_params(
+                    params_unprocessed
+                )
 
                 if not check_final_params(self.params):
                     raise MazeParamsError("Params are incorrect")
