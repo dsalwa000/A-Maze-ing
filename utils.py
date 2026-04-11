@@ -1,4 +1,4 @@
-from backend.errors import MazeSizeError
+from backend.errors import MazeSizeError, MazeParamsError
 
 
 def parce_params(params_unprocessed: dict[str, str]) -> dict[str, object]:
@@ -14,6 +14,11 @@ def parce_params(params_unprocessed: dict[str, str]) -> dict[str, object]:
             params["WIDTH"] = int(params_unprocessed["WIDTH"])
             params["HEIGHT"] = int(params_unprocessed["HEIGHT"])
 
+            if params["WIDTH"] < 10 or params["HEIGHT"] < 10:
+                raise MazeSizeError(
+                    "The maze is to small! Min size is 10 x 10"
+                )
+
         except ValueError:
             print("ERROR: width and height must be integers")
 
@@ -24,6 +29,12 @@ def parce_params(params_unprocessed: dict[str, str]) -> dict[str, object]:
             params["EXIT"] = tuple(
                 map(lambda x: int(x),
                     params_unprocessed["EXIT"].split(",")))
+
+            if params["ENTRY"] == params["EXIT"]:
+                raise MazeParamsError(
+                    "The start position and exit positions are the same.\n"
+                    "Fix it!"
+                )
 
         except ValueError:
             print("ERROR: entry and exit must be in format 'int,int'")

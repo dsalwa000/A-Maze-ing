@@ -119,7 +119,7 @@ class MazeGenerator:
             print(f"Error regarding output_maze.txt file: {e}")
 
     def display_maze_settings(self) -> None:
-        print(f"{line}\n" for line in self.config_str)
+        print(f"{line}\n" for line in self.config_list)
 
         print(f"\n{self.entry[0], self.entry[1]}\n")
         print(f"{self.exit[0], self.exit[1]}\n")

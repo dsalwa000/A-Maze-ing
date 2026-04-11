@@ -329,7 +329,9 @@ def key_hook(keycode: int, param) -> None:
         param["visualizer"].change_color()
         param["visualizer"].put_image()
     elif keycode == 52:
-        param["visualizer"].color_forty_two = not param["visualizer"].color_forty_two
+        param["visualizer"].color_forty_two = (
+            not param["visualizer"].color_forty_two
+        )
         param["visualizer"].recolor_forty_two()
     elif keycode == 53 or keycode == 65307:
         param["m"].mlx_destroy_window(param["mlx"], param["win"])

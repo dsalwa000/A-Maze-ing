@@ -52,6 +52,8 @@ OUTPUT_FILE=maze.txt
 PERFECT=True
 ```
 
+Minimum size of the maze is 10 x 10.
+
 ### Optional fields:
 
 ```
@@ -63,27 +65,6 @@ SEED=42
 * Lines starting with `#` are ignored.
 * ENTRY and EXIT must be inside maze bounds.
 * ENTRY and EXIT must be different.
-
----
-
-## Maze Generation Algorithm
-
-### Chosen Algorithm: Recurisve Backtracker (DFS)
-
-The maze is generated using a depth-first search (DFS) approach:
-
-1. Start from a random cell.
-2. Visit unvisited neighbors randomly.
-3. Remove walls between current and next cell.
-4. Backtrack when no unvisited neighbors remain.
-
-### Why this algorithm?
-
-* Simple to implement
-* Produces perfect mazes naturally
-* Efficient (O(N))
-
----
 
 ## Output File Format
 
@@ -155,8 +136,8 @@ All generated content was reviewed, tested, and fully understood before use.
 
 ### Roles
 
-* dsalwa – backend part, code structure, work organizing
-* stitov – frontend part, design, testing
+* <dsalwa> – backend part, code structure
+* <stitov> – frontend part, design
 
 ---
 
