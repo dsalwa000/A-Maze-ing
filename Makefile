@@ -8,7 +8,7 @@ debug: install
 	venv/bin/python3 -m pdb a_maze_ing.py
 
 clean:
-	rm -rf */__pycache__
+	rm -rf *__pycache__
 
 lint:
 	flake8 .

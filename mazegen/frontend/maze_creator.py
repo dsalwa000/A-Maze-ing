@@ -267,6 +267,9 @@ class MazeVisualizer():
             if self.draw_path and (x, y) in self.pathway:
                 self.init_cell(img_data, PATH_BG, (x, y))
 
+            if self.color_forty_two and int(self.config[i], 16) == 15:
+                self.init_cell(img_data, FT_COLOR, (x, y))
+
             self.draw_cell(img_data, int(self.config[i], 16), (x, y), color)
 
     def put_image(self) -> None:
@@ -468,6 +471,13 @@ def create_visualization(
             "win": win_ptr,
             "visualizer": visualizer
         }
+
+        print("=== Amazing commands: ===")
+        print("1 - regenerate maze")
+        print("2 - show/hide path")
+        print("3 - change colors")
+        print("4 - toggle 42 color")
+        print("5 - quit")
 
         m.mlx_key_hook(win_ptr, key_hook, data)
         m.mlx_loop(mlx_ptr)
