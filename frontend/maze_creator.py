@@ -1,6 +1,7 @@
 from mlx import Mlx
 from MazeGenerator import MazeGenerator
 import os
+from typing import Any
 
 COLOR_RED = 4294901760
 COLOR_GR = 4278255360
@@ -15,17 +16,37 @@ CELL_SIZE = 20
 
 
 class MazeVisualizer():
+    """Class responsible for handling everything regarding generating
+    visuals
+
+    Parameters:
+    m -- main mlx object
+    mlx_ptr -- pointer to the inititalized mlx
+    win_ptr -- pointer to the window
+    width -- total width of the maze
+    height -- total height of the maze
+    config -- the maze in hex string format
+    start -- entry position
+    end -- exit position
+    pathway -- string describing the path from start to end
+    color_index -- the index of the current color in rotation
+    draw_path -- whether the path should be drawn
+    color_forty_two -- whether the 42 in the center should be colored
+    img_red, img_green, img_blue -- saved references to images of the maze with
+    respective colors
+    images -- the list of all images mention above
+    """
     def __init__(
         self,
-        m,
-        mlx_ptr,
-        win_ptr,
-        width,
-        height,
-        config,
-        start,
-        end,
-        pathway,
+        m: Mlx,
+        mlx_ptr: Any,
+        win_ptr: Any,
+        width: int,
+        height: int,
+        config: str,
+        start: tuple[int, int],
+        end: tuple[int, int],
+        pathway: str,
     ):
         self.m = m
         self.mlx_ptr = mlx_ptr
@@ -36,14 +57,16 @@ class MazeVisualizer():
         self.config = config
         self.start = start
         self.end = end
-        self.pathway = self.generate_pathway(start, pathway)
-        self.color_index = 0
-        self.draw_path = True
-        self.color_forty_two = False
-        self.img_red = None
-        self.img_green = None
-        self.img_blue = None
-        self.images = []
+        self.pathway: list[tuple[int, int]] = (
+            self.generate_pathway(start, pathway)
+        )
+        self.color_index: int = 0
+        self.draw_path: bool = True
+        self.color_forty_two: bool = False
+        self.img_red: Any = None
+        self.img_green: Any = None
+        self.img_blue: Any = None
+        self.images: list[Any] = []
         self.gen_images()
 
     def my_mlx_pixel_put(
@@ -52,7 +75,7 @@ class MazeVisualizer():
         x: int,
         y: int,
         color: int,
-    ):
+    ) -> None:
         """Color a pixel
 
         Arguments:
@@ -69,41 +92,50 @@ class MazeVisualizer():
         addr[offset + 2] = (color >> 16) % 256
         addr[offset + 3] = (color >> 24) % 256
 
-    def has_north(self, code: int):
+    def has_north(self, code: int) -> bool:
         """Check if cell with a given code has north wall"""
         if code % 2:
             return True
         else:
             return False
 
-    def has_south(self, code: int):
+    def has_south(self, code: int) -> bool:
         """Check if cell with a given code has south wall"""
         if (code >> 2) % 2:
             return True
         else:
             return False
 
-    def has_east(self, code: int):
+    def has_east(self, code: int) -> bool:
         """Check if cell with a given code has east wall"""
         if (code >> 1) % 2:
             return True
         else:
             return False
 
-    def has_west(self, code: int):
+    def has_west(self, code: int) -> bool:
         """Check if cell with a given code has west wall"""
         if (code >> 3) % 2:
             return True
         else:
             return False
 
-    def draw_wall(self, data, start, end, cell_pos: tuple[int, int], color):
-        """draw a wall on coordinates from start to end
+    def draw_wall(
+        self,
+        data: tuple[memoryview, int, int, int],
+        start: tuple[int, int],
+        end: tuple[int, int],
+        cell_pos: tuple[int, int],
+        color: int
+    ) -> None:
+        """Draw a wall on coordinates from start to end
 
         Arguments:
         data -- image information
         start -- top left coordinate of the wall
         end -- bottom right coordinate of the wall
+        cell_pos -- position of the current cell in the maze
+        color -- color used to color the wall
         """
         for x in range(
             start[0] + cell_pos[0] * CELL_SIZE,
@@ -115,12 +147,21 @@ class MazeVisualizer():
             ):
                 self.my_mlx_pixel_put(data, x, y, color)
 
-    def draw_cell(self, data, code: int, cell_pos: tuple[int, int], color):
+    def draw_cell(
+        self,
+        data: tuple[memoryview, int, int, int],
+        code: int,
+        cell_pos: tuple[int, int],
+        color: int
+    ) -> None:
         """Draw all walls in a cell
 
         Arguments:
         data -- image information
-        code -- value from 0 to 15 describing the cell's walls
+        code -- value from 0 to 15 describing the cell's walls as explained
+        in the readme file
+        cell_pos -- position of the current cell in the maze
+        color -- color used to color the walls of the cell
         """
         if self.has_north(code):
             self.draw_wall(
@@ -130,6 +171,7 @@ class MazeVisualizer():
                 cell_pos,
                 color,
             )
+
         if self.has_south(code):
             self.draw_wall(
                 data,
@@ -138,6 +180,7 @@ class MazeVisualizer():
                 cell_pos,
                 color,
             )
+
         if self.has_east(code):
             self.draw_wall(
                 data,
@@ -146,6 +189,7 @@ class MazeVisualizer():
                 cell_pos,
                 color,
             )
+
         if self.has_west(code):
             self.draw_wall(
                 data,
@@ -155,11 +199,17 @@ class MazeVisualizer():
                 color,
             )
 
-    def init_cell(self, data, color, cell_pos: tuple[int, int]):
+    def init_cell(
+        self,
+        data: tuple[memoryview, int, int, int],
+        color: int,
+        cell_pos: tuple[int, int]
+    ) -> None:
         """Initialize a cell with background color
 
         data -- image information
         color -- background color of the cell
+        cell_pos -- position of the current cell in the maze
         """
         for x in range(CELL_SIZE):
             for y in range(CELL_SIZE):
@@ -170,7 +220,11 @@ class MazeVisualizer():
                     color,
                 )
 
-    def generate_pathway(self, start: tuple, path_string: str) -> list:
+    def generate_pathway(
+        self,
+        start: tuple[int, int],
+        path_string: str
+    ) -> list[tuple[int, int]]:
         """
         Create a pathway list from a string
 
@@ -178,7 +232,6 @@ class MazeVisualizer():
         path_string -- string consisting of letters S, N, W, E describing
         a path to solve the maze
         returns a list of tuples with coordinates of each step on the pathway
-
         """
         pathway = []
         current_pos = start
@@ -196,7 +249,17 @@ class MazeVisualizer():
         self.pathway = pathway
         return pathway
 
-    def draw_cells(self, img_data, color):
+    def draw_cells(
+        self,
+        img_data: tuple[memoryview, int, int, int],
+        color: int
+    ) -> None:
+        """Draw all the cells in the maze
+
+        Arguments:
+        img_data -- image information
+        color -- color to use for the walls
+        """
         for i in range(len(self.config)):
             x = (i % self.width)
             y = i // self.width
@@ -206,7 +269,8 @@ class MazeVisualizer():
 
             self.draw_cell(img_data, int(self.config[i], 16), (x, y), color)
 
-    def put_image(self):
+    def put_image(self) -> None:
+        """Draw the ready image on the window"""
         self.m.mlx_put_image_to_window(
             self.mlx_ptr,
             self.win_ptr,
@@ -215,7 +279,8 @@ class MazeVisualizer():
             0
         )
 
-    def gen_images(self):
+    def gen_images(self) -> None:
+        """Generate images for each available color"""
         self.img_red = self.m.mlx_new_image(
             self.mlx_ptr,
             self.width * CELL_SIZE,
@@ -241,12 +306,14 @@ class MazeVisualizer():
         self.draw_cells(img_data_g, COLOR_GR)
         self.draw_cells(img_data_b, COLOR_BL)
 
-    def change_color(self):
+    def change_color(self) -> None:
+        """Change the active color of the walls (images need to be redrawn)"""
         self.color_index += 1
         if self.color_index >= len(COLORS):
             self.color_index = 0
 
     def redraw_pathway(self) -> None:
+        """Draw or hide pathway depending of the draw_path parameter"""
         for j in range(len(self.images)):
             current_img = self.images[j]
             img_data = self.m.mlx_get_data_addr(current_img)
@@ -276,7 +343,10 @@ class MazeVisualizer():
             0
         )
 
-    def recolor_forty_two(self):
+    def recolor_forty_two(self) -> None:
+        """Change the background color of 42 in the center depending on
+        color_forty_two parameter
+        """
         for j in range(len(self.images)):
             current_img = self.images[j]
             img_data = self.m.mlx_get_data_addr(current_img)
@@ -305,7 +375,8 @@ class MazeVisualizer():
             0
         )
 
-    def regenerate_maze(self):
+    def regenerate_maze(self) -> None:
+        """Generate a new maze using the provided config file"""
         g = MazeGenerator()
         self.config = g.config
         self.pathway = self.generate_pathway(g.entry, g.shortest_path)
@@ -319,7 +390,14 @@ class MazeVisualizer():
         g.render_to_file()
 
 
-def key_hook(keycode: int, param) -> None:
+def key_hook(keycode: int, param: dict) -> None:
+    """Function to run when a key is pressed
+
+    Arguments:
+    keycode -- the key that was pressed
+    param -- a dict with necessary data: references to Mlx instance,
+    mlx pointer, window pointer, and the active MazeVisualizer
+    """
     if keycode == 49:
         param["visualizer"].regenerate_maze()
     elif keycode == 50:
@@ -341,8 +419,8 @@ def key_hook(keycode: int, param) -> None:
 def create_visualization(
     width: int,
     height: int,
-    start: int,
-    end: int,
+    start: tuple[int, int],
+    end: tuple[int, int],
     config_list: list[str],
     pathway_str: str
 ) -> None:
@@ -354,8 +432,8 @@ def create_visualization(
     height -- height of the maze
     start -- entry point of the maze
     end -- exit point of the maze
-    is_perfect -- whether the maze is perfect (has one solution) or not
-
+    config_list -- the maze in the list of strings format
+    pathway_str -- the pathway from start to end as a string
     """
     try:
         m = Mlx()
