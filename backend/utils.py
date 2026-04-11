@@ -122,7 +122,7 @@ def pick_direction(
     """
     Pick randomly a nearby not-visited direction
 
-    Returns (parts, to_save) where 
+    Returns (parts, to_save) where
         parts: is a 3-item list of strings [axis, step, wall]
         (look at the Direction Enum)
         to_save: returns True when the cell had more than option to go
