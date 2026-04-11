@@ -6,10 +6,14 @@ from typing import Any
 COLOR_RED = 4294901760
 COLOR_GR = 4278255360
 COLOR_BL = 4278190335
+COLOR_YELLOW = 4294967040
+COLOR_ORANGE = 4294919424
 COLOR_BRIGHT_BL = 4278203135
 COLOR_WHITE = 4294967295
 DARK_BG = 4278190080
 PATH_BG = COLOR_BRIGHT_BL
+ENTRY_BG = COLOR_YELLOW
+EXIT_BG = COLOR_ORANGE
 FT_COLOR = COLOR_WHITE
 COLORS = [COLOR_RED, COLOR_GR, COLOR_BL]
 CELL_SIZE = 20
@@ -265,7 +269,12 @@ class MazeVisualizer():
             y = i // self.width
 
             if self.draw_path and (x, y) in self.pathway:
-                self.init_cell(img_data, PATH_BG, (x, y))
+                if (x, y) == self.pathway[0]:
+                    self.init_cell(img_data, ENTRY_BG, (x, y))
+                elif (x, y) == self.pathway[len(self.pathway) - 1]:
+                    self.init_cell(img_data, EXIT_BG, (x, y))
+                else:
+                    self.init_cell(img_data, PATH_BG, (x, y))
 
             if self.color_forty_two and int(self.config[i], 16) == 15:
                 self.init_cell(img_data, FT_COLOR, (x, y))
@@ -327,7 +336,12 @@ class MazeVisualizer():
 
                 if (x, y) in self.pathway:
                     if self.draw_path:
-                        self.init_cell(img_data, PATH_BG, (x, y))
+                        if (x, y) == self.pathway[0]:
+                            self.init_cell(img_data, ENTRY_BG, (x, y))
+                        elif (x, y) == self.pathway[len(self.pathway) - 1]:
+                            self.init_cell(img_data, EXIT_BG, (x, y))
+                        else:
+                            self.init_cell(img_data, PATH_BG, (x, y))
                     else:
                         self.init_cell(img_data, DARK_BG, (x, y))
 
