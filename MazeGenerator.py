@@ -59,12 +59,12 @@ class MazeGenerator:
 
         random.seed(self.params["SEED"])
 
-        config_str: list[str] = maze_numbers_generator(
+        self.config_list: list[str] = maze_numbers_generator(
             self.width,
             self.height,
             self.is_perfect
         )
-        self.config: str = "".join(config_str)
+        self.config: str = "".join(self.config_list)
 
         # Here we have a problem
         self.shortest_path: str = find_shortest_path(
@@ -85,6 +85,38 @@ class MazeGenerator:
             self.shortest_path
         )
 
+    def render_to_file(self) -> None:
+        try:
+            with open("output_maze.txt", "w", encoding="utf-8") as file:
+                """
+                We are writing our final maze configuration inside
+                output_maze.txt, how it should looks like:
+
+                d515155513
+                954543d56a
+                c3f916fffa
+                92fc4157fa
+                aafffafffa
+                a817fafd52
+                c6c3fafffa
+                953c52953a
+                83c3d283aa
+                ec5456c6c6
+
+                (0, 0)
+                (9, 9)
+                EEEEEEEEESSSSSSSSS
+
+                """
+                file.writelines(f"{line}\n" for line in self.config_list)
+
+                file.write(f"\n{self.entry[0], self.entry[1]}\n")
+                file.write(f"{self.exit[0], self.exit[1]}\n")
+                file.write(self.shortest_path)
+
+        except Exception as e:
+            print(f"Error regarding output_maze.txt file: {e}")
+
     def display_maze_settings(self) -> None:
         print(f"{line}\n" for line in self.config_str)
 
@@ -100,4 +132,5 @@ if __name__ == "__main__":
     """
     maze_generator = MazeGenerator()
 
+    maze_generator.render_to_file()
     maze_generator.render_maze()
